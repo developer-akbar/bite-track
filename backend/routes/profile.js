@@ -6,7 +6,7 @@ const Profile = require('../models/Profile');
 router.post('/create', async (req, res) => {
     const { name, age, gender, height, weight, activityLevel } = req.body;
 
-    if (!age || !gender || !height || !weight || !activityLevel) {
+    if (!name || !age || !gender || !height || !weight || !activityLevel) {
         return res.status(400).json({ error: 'All profile fields are required' });
     }
 
@@ -36,6 +36,7 @@ router.post('/create', async (req, res) => {
     }
 });
 
+// Retrieve profile data
 router.get('/latest-profile', async (req, res) => {
     try {
         const latestProfile = await Profile.findOne().sort({ createdAt: -1 });
@@ -48,6 +49,21 @@ router.get('/latest-profile', async (req, res) => {
         console.error('Error getting profile data:', err);
         res.status(500).json({ error: 'Something went wrong' });
     }
-})
+});
+
+// Update profile data
+router.put('/update/:id', async (req, res) => {
+    const { id } = req.params;
+    const update = req.body;
+
+    try {
+        const updatedProfile = await Profile.findByIdAndUpdate(id, update, { new: true });
+        res.json(updatedProfile);
+    } catch (err) {
+        console.error("Error updating profile:", err);
+        res.status(500).json({ error: "Failed to update profile" });
+    }
+});
+
 
 module.exports = router;
